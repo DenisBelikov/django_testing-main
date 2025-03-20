@@ -10,7 +10,6 @@ from notes.models import Note
 
 
 class TestListNotes(BaseTestCase):
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -27,7 +26,7 @@ class TestListNotes(BaseTestCase):
     def test_notes_one_author(self):
         response = self.client_author.get(NOTES_LIST)
         self.assertIn('object_list', response.context)
-        notes = self.client_author.get(NOTES_LIST).context['object_list']
+        notes = response.context['object_list']
         self.assertIn(self.note, notes)
         note = notes.get(id=self.note.id)
         self.assertEqual(note.title, self.note.title)
@@ -45,6 +44,6 @@ class TestListNotes(BaseTestCase):
         urls = (NOTES_ADD, NOTES_EDIT)
         for url in urls:
             with self.subTest(url=url):
-                context = self.client_author.get(url).context
-                self.assertIn('form', context)
-                self.assertIsInstance(context['form'], NoteForm)
+                response = self.client_author.get(url)
+                form = response.context.get('form')
+                self.assertIsInstance(form, NoteForm)

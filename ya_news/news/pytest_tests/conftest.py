@@ -137,7 +137,7 @@ def list_news():
 @pytest.fixture
 def list_comments(news, author):
     """Список комментариев."""
-    for index in range(2):
+    for index in range(10):  # Исправлено на 10 комментариев
         comment = Comment.objects.create(
             author=author,
             news=news,

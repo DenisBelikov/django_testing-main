@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 import pytest
+from pytest_django.asserts import assertFormError
 
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
@@ -16,8 +17,11 @@ def test_by_bad_words(client_author, bad_word, news_detail_url):
     comments_before = Comment.objects.count()
     BAD_WORD_DATA['text'] = BAD_WORD_DATA['text'].format(bad_word=bad_word)
     response = client_author.post(news_detail_url, data=BAD_WORD_DATA)
+
+    # Используем assertFormError вместо проверки через response.context
+    assertFormError(response, form='form', field='text', errors=WARNING)
+
     assert Comment.objects.count() == comments_before
-    assert response.context['form'].errors['text'][0] == WARNING
 
 
 def test_anonymous_client_cant_create_comment(client, news_detail_url):
